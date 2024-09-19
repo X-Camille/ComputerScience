@@ -1,6 +1,6 @@
 # Test de Miller-Rabin
 
-# Dado un número primo q y un valor 1 < a < n-1, se determina si el número es posiblemente primo o compuesto.
+# Dado un número primo q y un valor 2 < a < n-2, se determina si el número es posiblemente primo o compuesto.
 
 # Retorna True si el número es posiblemente primo.
 

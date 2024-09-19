@@ -11,6 +11,7 @@ def convertir_a_ascii(mensaje):
     print(f"Longitudes de códigos ASCII: {longitudes}")
     return secuencia_ascii_concatenada, longitudes
 
+# La secuencia ASCII se divide en bloques menores que n 
 def dividir_en_bloques(secuencia_ascii, longitudes, n):
     bloques = []
     i = 0
@@ -42,7 +43,6 @@ def convertir_a_base(numero, base=10):
     return ''.join(str(digito) for digito in digitos)
 
 # Algoritmo square and multiply
-
 def square_and_multiply(base, exponente, modulo):
     resultado = 1
     base = base % modulo
@@ -53,20 +53,14 @@ def square_and_multiply(base, exponente, modulo):
         base = (base * base) % modulo
     return resultado
 
+# Se utilizará la variable longitudes para monitorear que sean igual a 3 tanto en el cifrado como descifrado
 def cifrar_mensaje_rsa(mensaje, n, e, base=10):
-    secuencia_ascii = convertir_a_ascii(mensaje)
-    bloques = dividir_en_bloques(secuencia_ascii, n)
-    bloques_cifrados = [square_and_multiply(bloque, e, n) for bloque in bloques]
-    bloques_cifrados_en_base = [int(convertir_a_base(bloque, base)) for bloque in bloques_cifrados]
-    return bloques_cifrados_en_base
-
-def cifrar_mensaje_rsa(mensaje, n, e):
-    secuencia_ascii, longitudes = convertir_a_ascii(mensaje)
+    secuencia_ascii, longitudes = convertir_a_ascii(mensaje) 
     bloques = dividir_en_bloques(secuencia_ascii, longitudes.copy(), n)  # Usar copia de longitudes
-    bloques_cifrados = [square_and_multiply(bloque, e, n) for bloque in bloques]
+    bloques_en_base = [int(convertir_a_base(bloque, base)) for bloque in bloques]
+    print(f"Bloques en base: {bloques_en_base}")
+    bloques_cifrados = [square_and_multiply(bloque, e, n) for bloque in bloques_en_base]
     print(f"Bloques cifrados: {bloques_cifrados}")
-    bloques_cifrados_en_base = [int(convertir_a_base(bloque)) for bloque in bloques_cifrados]
-    print(f"Bloques cifrados en base: {bloques_cifrados_en_base}")
-    return bloques_cifrados_en_base, longitudes
-
+    
+    return bloques_cifrados, longitudes
 
