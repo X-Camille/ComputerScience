@@ -15,18 +15,19 @@ def generate_line_image():
     return line_image
 
 def generate_circle_image():
-    radius = random.randint(1, 4)  # Limitado a un máximo de 4 para que el círculo quepa en la imagen 10x10
+    radius = random.randint(1, 4)  # Limita el radio entre 1 y 4
     center_x = random.randint(radius, 9 - radius)  # Asegura que el círculo no se salga de los bordes
     center_y = random.randint(radius, 9 - radius)
     
     circle_image = [[0 for _ in range(10)] for _ in range(10)] 
-    
-    # Llenar la imagen con el círculo
+
     for i in range(10):
         for j in range(10):
-            if (i - center_x) ** 2 + (j - center_y) ** 2 <= radius ** 2:
-                circle_image[i][j] = 1  
-    
+            # Calcular la distancia al centro
+            distance_squared = (i - center_x) ** 2 + (j - center_y) ** 2
+            # Verificar si está cerca del borde del círculo
+            if (radius - 0.5) ** 2 <= distance_squared <= (radius + 0.5) ** 2:
+                circle_image[i][j] = 1  # Marcar el contorno del círculo
     return circle_image
 
 def showPicture(x_input):
@@ -70,7 +71,6 @@ def perceptron(x_input):
             weighted_sum += x_input[index][column] * w_input_weights[i][j]
         weighted_sum += hidden_bias
         hidden_layer_output.append(step(weighted_sum))  # Aplicar la función escalón
-    print(hidden_layer_output)
     
     # Calcular la suma ponderada para cada clase en la capa de salida
     weighted_sums = [0] * output_size  # Inicializa las sumas para cada clase
@@ -79,7 +79,6 @@ def perceptron(x_input):
         for i in range(hidden_size):
             weighted_sums[k] += hidden_layer_output[i] * w_hidden_weights[k][i]  # Usar pesos específicos para cada clase
         weighted_sums[k] += output_bias
-    print(weighted_sums)
 
     # Aplicar softmax para obtener probabilidades
     probabilities = softmax(weighted_sums)
@@ -114,15 +113,17 @@ def main():
             correct_predictions += 1
 
     accuracy = (correct_predictions / total_tests) * 100
-    return accuracy  # Cambiar print por return para acumular el accuracy
+    return accuracy 
 
-# Inicializar variables para calcular el promedio
-total_accuracy = 0
-num_executions = 30
+for i in range(15):
+    # Inicializar variables para calcular el promedio
+    total_accuracy = 0
+    num_executions = 30
+    
 
-for i in range(num_executions):
-    total_accuracy += main()  # Acumula el accuracy de cada ejecución
+    for i in range(num_executions):
+        total_accuracy += main()  # Acumula el accuracy de cada ejecución
 
-# Calcular y mostrar el promedio
-average_accuracy = total_accuracy / num_executions
-print(f"El promedio de éxito en las pruebas ha sido del: {average_accuracy}%")
+    # Calcular y mostrar el promedio
+    average_accuracy = total_accuracy / num_executions
+    print(f"El promedio de éxito en las pruebas ha sido del: {average_accuracy}%")
