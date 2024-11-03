@@ -3,7 +3,6 @@ import random
 import datasets_generator
 import matplotlib.pyplot as plt
 
-# Clase Perceptron se mantiene igual
 class Perceptron:
     def __init__(self):
         self.input_size = 10  
@@ -24,6 +23,7 @@ class Perceptron:
     def sigmoid(self, x):
         # Limita x al rango de -709 a 709
         if x < -709:
+            x = -709
             x = -709
         elif x > 709:
             x = 709
@@ -57,6 +57,7 @@ class Perceptron:
         
         # Aplicar softmax para obtener la salida
         output = self.softmax(output_input)
+        
         return output, hidden_output 
 
     def backpropagate(self, dataset, expected_set):
@@ -137,8 +138,6 @@ def evaluate_perceptron():
     correct = 0
     correct_counts = {"Linea": 0, "Circulo": 0, "Random": 0}  # Conteo por clase
     expected_datasets = ["Linea", "Circulo", "Random"]
-    
-    training_set(350, 100)
 
     print(f"Procesando conjunto de prueba de {num_sets} imágenes...")
     for n in range(num_sets):
@@ -178,8 +177,6 @@ def evaluate_perceptron():
     return overall_accuracy
 
 def evaluate_multiple_times(num):
-    training_set(350, 100)  # Entrenar el perceptrón
-    
     total_success_rates = []
 
     for _ in range(num):
@@ -189,6 +186,8 @@ def evaluate_multiple_times(num):
     # Calcular el promedio de las tasas de éxito
     average_success_rate = sum(total_success_rates) / len(total_success_rates)
     
+    print("")
+    print("----------Evaluando múltiples veces----------")
     for i in range(len(total_success_rates)):
         print(f"\nPrecisión total: {total_success_rates[i]:.2f}%")
 
@@ -196,9 +195,6 @@ def evaluate_multiple_times(num):
     
     return average_success_rate
 
-
+training_set(350, 100)
 evaluate_perceptron() # Evalúa el perceptrón una vez
-# evaluate_multiple_times(10) # Evalúa el perceptrón múltiples veces
-
-            
-        
+evaluate_multiple_times(10) # Evalúa el perceptrón múltiples veces
