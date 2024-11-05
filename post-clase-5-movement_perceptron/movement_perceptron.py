@@ -33,20 +33,18 @@ def generate_random_data():
     random_data.extend(points)
     return random_data
 
-def generate_datasets():
+def generate_dataset():
     linear_data = generate_linear_data()
     circular_data = generate_circular_data()
     random_data = generate_random_data()
     return [linear_data, circular_data, random_data]
 
-datasets = generate_datasets()
-
-def graficar_dataset():
+def graficar_dataset(dataset):
     # Crear gráficos
     fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 
     # Graficar datos lineales
-    linear_points = datasets[0]
+    linear_points = dataset[0]
     x_linear, y_linear = zip(*linear_points)
     axs[0].plot(x_linear, y_linear, marker='o')
     axs[0].set_title('Movimiento Lineal')
@@ -55,7 +53,7 @@ def graficar_dataset():
     axs[0].grid()
 
     # Graficar datos circulares
-    circular_points = datasets[1]
+    circular_points = dataset[1]
     x_circular, y_circular = zip(*circular_points)
     axs[1].plot(x_circular, y_circular, marker='o')
     axs[1].set_title('Movimiento Circular')
@@ -64,7 +62,7 @@ def graficar_dataset():
     axs[1].grid()
 
     # Graficar datos aleatorios
-    random_points = datasets[2]
+    random_points = dataset[2]
     x_random, y_random = zip(*random_points)
     axs[2].scatter(x_random, y_random)
     axs[2].set_title('Movimiento Aleatorio')
@@ -92,6 +90,9 @@ class Perceptron:
         
         # Tasa de aprendizaje
         self.learning_rate = 0.01
+        
+    def set_learning_rate(self, learning_rate):
+        self.learning_rate = learning_rate;
     
     def sigmoid(self, x):
         # Limita x al rango de -709 a 709
@@ -175,18 +176,26 @@ def get_perceptron_output(output):
         return "Circulo"
     else:
         return "Random"
+    
+def generate_datasets(num_sets):
+    datasets = []
+    for _ in range(num_sets):
+        dataset = generate_dataset()  # Cada dataset con datos de cada clase
+        datasets.append(dataset)
+    return datasets
 
 # Función para entrenar y calcular MSE
 def training_set(epochs, num_sets):
     mse_values = []  # Almacena los valores de MSE por época
+    datasets = generate_datasets(num_sets)
     for epoch in range(epochs):
         total_mse = 0  
-        for _ in range(num_sets):   
-            datasets = generate_datasets()  # Cada dataset con datos de cada clase
-            expected_set = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-            for i in range(len(datasets)):  
-                output = perceptron.backpropagate(datasets[i], expected_set[i])
-                # Calcular MSE para este dataset
+        for dataset in datasets: 
+            expected_set = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]   
+            for i in range(len(dataset)):  
+                output = perceptron.backpropagate(dataset[i], expected_set[i])
+                
+                # Calcular MSE para esta instancia
                 total_mse += sum((expected_set[i][j] - output[j]) ** 2 for j in range(len(expected_set[i]))) / len(expected_set[i])
         
         # Calcular el MSE promedio para esta época
@@ -204,6 +213,7 @@ def training_set(epochs, num_sets):
     plt.show()
     print(f"Entrenamiento completado: {num_sets} imágenes en {epochs} épocas.")
 
+
 # Evaluar el perceptrón
 def evaluate_perceptron():
     overall_accuracy = 0
@@ -215,10 +225,10 @@ def evaluate_perceptron():
 
     print(f"Procesando conjunto de prueba de {num_sets} imágenes...")
     for n in range(num_sets):
-        datasets = generate_datasets()
+        dataset = generate_dataset()
         print(f"---------------DATASET {n}---------------")
-        for i in range(len(datasets)):
-            output, _ = perceptron.forward(datasets[i])
+        for i in range(len(dataset)):
+            output, _ = perceptron.forward(dataset[i])
             answer = get_perceptron_output(output)
             type_set = ""
             if i == 0:
@@ -269,6 +279,30 @@ def evaluate_multiple_times(num):
     
     return average_success_rate
 
-training_set(350, 100)
-evaluate_perceptron() # Evalúa el perceptrón una vez
-evaluate_multiple_times(10) # Evalúa el perceptrón múltiples veces
+def menu():
+    while True:
+        print("------------Menú------------")
+        print("1. Entrenar perceptrón con 100 conjuntos de datos por cada categoría (Instrucción Preclase)")
+        print("2. Entrenar perceptrón con 1000 conjuntos de datos por cada categoría (Adicional)")
+        print("3. Visualizar gráfica de conjunto de datos aleatorio")
+        print("0. Salir")
+        opcion = input("Ingrese una opción: ")
+        if opcion == "1":
+            perceptron.set_learning_rate(0.009)
+            training_set(500, 100)
+            evaluate_perceptron() # Evalúa el perceptrón una vez
+            evaluate_multiple_times(10) # Evalúa el perceptrón múltiples veces
+        elif opcion == "2":
+            perceptron.set_learning_rate(0.001)
+            training_set(200, 1000)
+            evaluate_perceptron() 
+            evaluate_multiple_times(10) 
+        elif opcion == "3":
+            dataset = generate_dataset()
+            graficar_dataset(dataset)
+        elif opcion == "0":
+            break;
+        else: 
+            print("Opción no válida. Inténtenlo de nuevo.")
+            
+menu()
